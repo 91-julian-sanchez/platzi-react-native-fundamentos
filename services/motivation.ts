@@ -1,0 +1,32 @@
+const LOCAL = [
+  "¡Gran progreso! 👏",
+  "Pequeños pasos, grandes cambios 🚀",
+  "Tu constancia paga dividendos 💪",
+  "Sigue así, hoy sumaste +1 🔥",
+  "Lo estás logrando día a día ✨",
+];
+
+export async function getMotivation(name?: string, habitTitle?: string){
+    const endpoint = process.env.MOTIVATION_API_ENDPOINT;
+    if(!endpoint) return LOCAL[Math.floor(Math.random() * LOCAL.length)];
+
+    const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, habitTitle }),
+    });
+    
+    try {
+        if (!res.ok) throw new Error("Endpoint error");
+
+        const data = await res.json();
+
+        const text = (data?.message).toString();
+        return text.slice(0, 120) || LOCAL[0];
+
+    } catch (error) {
+        console.warn("Motivation fallback:", error);
+        return LOCAL[Math.floor(Math.random() * LOCAL.length)];
+    }
+
+}
